@@ -82,8 +82,8 @@ class PhotoFilterViewController: UIViewController {
     }
     
     private func updateViews() {
-        if let originalImage = originalImage {
-            imageView.image = filterImage(originalImage)
+        if let scaledImage = scaledImage {
+            imageView.image = filterImage(scaledImage)
         } else {
             imageView.image = nil
         }
