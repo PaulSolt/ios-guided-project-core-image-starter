@@ -6,7 +6,23 @@ import Photos
 class PhotoFilterViewController: UIViewController {
 
     private let context = CIContext(options: nil)
+    
     private var originalImage: UIImage? {
+        didSet {
+            // 414 * 3 = 1,242 pixels (portrait on iPhone 11 Pro Max)
+            guard let originalImage = originalImage else {
+                scaledImage = nil // clear out image if set to nil
+                return
+            }
+            
+            var scaledSize = imageView.bounds.size
+            let scale = UIScreen.main.scale
+            scaledSize = CGSize(width: scaledSize.width * scale, height: scaledSize.height * scale)
+            scaledImage = originalImage.imageByScaling(toSize: scaledSize)
+        }
+    }
+
+    private var scaledImage: UIImage? {
         didSet {
             updateViews()
         }
@@ -28,7 +44,6 @@ class PhotoFilterViewController: UIViewController {
         originalImage = imageView.image
     }
     
-    // 414*3 = 1,242 pixels (portrait on iPhone 11 Pro Max)
     private func filterImage(_ image: UIImage) -> UIImage? {
         // UIImage -> CGImage -> CIImage
 
@@ -53,15 +68,13 @@ class PhotoFilterViewController: UIViewController {
     }
 	
     private func updateViews() {
-        guard let originalImage = originalImage else { return }
-        imageView.image = filterImage(originalImage)
+        guard let scaledImage = scaledImage else { return }
+        imageView.image = filterImage(scaledImage)
     }
     
 	// MARK: Actions
 	
     @IBAction func choosePhotoButtonPressed(_ sender: Any) {
-        // TODO: show the photo picker so we can choose on-device photos
-        // UIImagePickerController + Delegate
         presentImagePickerController()
     }
 
